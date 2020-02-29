@@ -80,6 +80,32 @@ function task2()
 
 function task3()
 {
+    $array = [];
+    $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/test.csv', 'w');
+    for ($i = 0; $i < 50; $i++) {
+        $res = rand($i, 100);
+        array_push($array, $res);
+    }
+    fputcsv($file, $array);
+
+    $fp = fopen($_SERVER['DOCUMENT_ROOT'] . '/test.csv', 'r');
+    if (!$fp) {
+        die("Can't open file");
+    }
+
+    $sum = 0;
+    while ($str = fgetcsv($fp, 1000 * 1024, ';')) {
+        $array = explode(',', $str[0]);
+
+        foreach ($array as $i) {
+            $int = (int)$i;
+            if ($int % 2 === 0) {
+                $sum += $int;
+            }
+        }
+    }
+
+    echo $sum;
 }
 
 function task4()
@@ -90,7 +116,7 @@ function task4()
 
     foreach ($result->query->pages as $page) {
         foreach ($page as $key => $value) {
-            if ($key === 'pageid' || $key==='title'){
+            if ($key === 'pageid' || $key === 'title') {
                 echo $key . ' ' . $value . '<br/>';
             }
         }
