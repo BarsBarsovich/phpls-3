@@ -8,8 +8,8 @@ function task1()
     $xml = new SimpleXMLElement($file);
 
     echo '<strong> Сведения о заказе </strong><br/>';
-    echo '<strong>Номер заказа: </strong>' . $xml-> attributes()-> PurchaseOrderNumber . '<br/>';
-    echo '<strong>Дата доставки: </strong>' . $xml-> attributes()-> OrderDate . '<br/>';
+    echo '<strong>Номер заказа: </strong>' . $xml->attributes()->PurchaseOrderNumber . '<br/>';
+    echo '<strong>Дата доставки: </strong>' . $xml->attributes()->OrderDate . '<br/>';
 
     foreach ($xml->Address as $address) {
         echo '<ul>';
@@ -43,8 +43,59 @@ function task1()
 
 function task2()
 {
+//
+
+    $users = [
+        'items' => [
+            ['name' => 'Router', 'price' => '150'],
+            ['name' => 'Mouse', 'price' => '160'],
+            ['name' => 'Notebook', 'price' => '170'],
+        ]
+    ];
+    $json = json_encode($users);
+
+    file_put_contents('output.json', $json);
+
+    $file1 = file_get_contents('output.json');
+
+
+    $needUpdate = rand(0, 10);
+    echo $needUpdate;
+    if ($needUpdate > 5) {
+        $json_object = json_decode($json);
+        $json_object->items[0]->name = 'Switch';
+        file_put_contents('output2.json', json_encode($json_object));
+    } else {
+        file_put_contents('output2.json', json_encode($json));
+    }
+
+    $file2 = file_get_contents('output2.json');
+    print_r(array_diff_assoc_recursive(json_decode($file1, true), json_decode($file2, true)));
+
 }
+
 
 function task3()
 {
+}
+
+function array_diff_assoc_recursive($array1, $array2)
+{
+    foreach ($array1 as $key => $value) {
+        if (is_array($value)) {
+            if (!isset($array2[$key])) {
+                $difference[$key] = $value;
+            } elseif (!is_array($array2[$key])) {
+                $difference[$key] = $value;
+            } else {
+                $new_diff = array_diff_assoc_recursive($value, $array2[$key]);
+                if ($new_diff != false) {
+                    $difference[$key] = $new_diff;
+                }
+            }
+        } elseif (!isset($array2[$key]) || $array2[$key] != $value) {
+            $difference[$key] = $value;
+        }
+    }
+    return !isset($difference) ? 0 : $difference;
 }
