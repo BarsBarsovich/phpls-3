@@ -1,7 +1,10 @@
 <?php
 
 const FILE_URL = 'data.xml';
+const WIKI_URL = 'https://en.wikipedia.org/w/api.php?action=query&titles=Main%20Page&prop=revisions&rvprop=content&format=json';
 
+const OUTPUT_1 = 'output.xml';
+const OUTPUT_2 = 'output2.xml';
 function task1()
 {
     $file = file_get_contents(FILE_URL);
@@ -54,9 +57,9 @@ function task2()
     ];
     $json = json_encode($users);
 
-    file_put_contents('output.json', $json);
+    file_put_contents(OUTPUT_1, $json);
 
-    $file1 = file_get_contents('output.json');
+    $file1 = file_get_contents(OUTPUT_1);
 
 
     $needUpdate = rand(0, 10);
@@ -64,12 +67,12 @@ function task2()
     if ($needUpdate > 5) {
         $json_object = json_decode($json);
         $json_object->items[0]->name = 'Switch';
-        file_put_contents('output2.json', json_encode($json_object));
+        file_put_contents(OUTPUT_2, json_encode($json_object));
     } else {
-        file_put_contents('output2.json', json_encode($json));
+        file_put_contents(OUTPUT_2, json_encode($json));
     }
 
-    $file2 = file_get_contents('output2.json');
+    $file2 = file_get_contents(OUTPUT_2);
     print_r(array_diff_assoc_recursive(json_decode($file1, true), json_decode($file2, true)));
 
 }
@@ -78,6 +81,22 @@ function task2()
 function task3()
 {
 }
+
+function task4()
+{
+    $response = file_get_contents(WIKI_URL);
+
+    $result = json_decode($response);
+
+    foreach ($result->query->pages as $page) {
+        foreach ($page as $key => $value) {
+            if ($key === 'pageid' || $key==='title'){
+                echo $key . ' ' . $value . '<br/>';
+            }
+        }
+    }
+}
+
 
 function array_diff_assoc_recursive($array1, $array2)
 {
